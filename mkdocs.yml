@@ -23,5 +23,8 @@ nav:
     
 nav:
   - 前言: 
-    - '要求参考': 'index.md'
+    - '介绍': 'index.md'
     - '编程安全': 'safety_program.md'
+  - RUST入门:
+    - '介绍': 'base/easy.md'
+

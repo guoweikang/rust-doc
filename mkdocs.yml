@@ -17,5 +17,11 @@ markdown_extensions:
 
 
 nav:
-  - 前言: 'index.md'
+  - Home: 'index.md'
+  - 'User Guide':
+    - 'Writing your docs': 'writing-your-docs.md'
+    
+nav:
+  - 前言: 
+    - '要求参考': 'index.md'
     - '编程安全': 'safety_program.md'

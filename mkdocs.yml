@@ -14,3 +14,8 @@ markdown_extensions:
   - markdown_include.include:
       base_path: .
   - admonition
+
+
+nav:
+  - 前言: 'index.md'
+    - '编程安全': 'safety_program.md'

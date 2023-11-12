@@ -27,4 +27,13 @@ nav:
     - '编程安全': 'safety_program.md'
   - RUST入门:
     - '介绍': 'base/easy.md'
+    - '基元类型': 'base/primitive_Type.md'
+    - '(不)可变量绑定': 'base/let.md'
+    - '函数': 'base/fn.md'
+    - '条件判断': 'base/fn.md'
+    - '自定义类型': 'base/struct.md'
+    - 'match': 'base/fn.md'
+  - Cargo项目管理:
+    - '模块': 'base/fn.md'
+
 

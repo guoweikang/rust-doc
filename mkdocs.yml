@@ -30,10 +30,33 @@ nav:
     - '基元类型': 'base/primitive_Type.md'
     - '(不)可变量绑定': 'base/let.md'
     - '函数': 'base/fn.md'
-    - '条件判断': 'base/fn.md'
-    - '自定义类型': 'base/struct.md'
-    - 'match': 'base/fn.md'
-  - Cargo项目管理:
-    - '模块': 'base/fn.md'
+    - 'flow control': 'base/flow_control.md'
+    - '自定义类型': 'base/struct_tuple.md'
+    - '枚举类型': 'base/enum.md'
+    - '总结': 'base/conclusion.md'
+
+  - RUST OOP基础:
+    - '关联函数和方法': 'oop_base/method.md'
+    - '泛型': 'oop_base/generic.md'
+    - '特征': 'oop_base/trait.md'
+    - '特征区间': 'oop_base/trait_bound.md'
+    - '多态': 'oop_base/dispatch.md'
+
+  - 代码管理:
+    - '模块': 'cargo/mod.md'
+    - 'crate': 'cargo/crate.md'
+    - 'use关键字': 'cargo/use.md'
+
+  - 内存管理和安全:
+    - '模块': 'cargo/mod.md'
+    
+  - 特色闭包:
+  - 特色异常处理:
+  
+  - RUST 进阶:
+    - '闭包': 'profession/clous.md'
+
+    - '闭包': 'profession/clous.md'
+    - '迭代器': 'profession/fn.md'
 
 

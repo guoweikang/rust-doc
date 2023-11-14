@@ -48,15 +48,7 @@ nav:
     - 'use关键字': 'cargo/use.md'
 
   - 内存管理和安全:
-    - '模块': 'cargo/mod.md'
+    - '前置基础': 'mem_safe/intro.md'
     
-  - 特色闭包:
-  - 特色异常处理:
-  
-  - RUST 进阶:
-    - '闭包': 'profession/clous.md'
-
-    - '闭包': 'profession/clous.md'
-    - '迭代器': 'profession/fn.md'
 
 

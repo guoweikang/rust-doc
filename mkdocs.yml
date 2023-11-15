@@ -49,6 +49,7 @@ nav:
 
   - 内存管理和安全:
     - '前置基础': 'mem_safe/intro.md'
-    
+    - '所有权': 'mem_safe/ownership.md'
+
 
 

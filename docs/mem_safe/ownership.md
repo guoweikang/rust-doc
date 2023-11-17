@@ -13,9 +13,6 @@
  - 代码中使用的变量或者内存，在任何时候都应该是有效的
  - 访问和使用内存不应该出现不符合预期的情况
 
-
-
-
 ### 何为变量？
 无论访问堆或者是栈上的内存，我们之前已经讲过，都必须要通过变量访问 
 
@@ -53,6 +50,9 @@ void func()
 所有权的一个核心思想就是，能不能让一个内存，只有一个所有者？只有该所有者变量(访问内存 都需要经过变量) 有该内存的所有权
 
 
+Rust 强制实行 RAII（Resource Acquisition Is Initialization，资源获取即初始化），
+所以任何对象在离开作用域时，它的析构函数（destructor）就被调用，然后它占有的资源就被释放
+
 ###所有权转移
 
 所有权转移是为了 践行 所有权第一原则: 一个内存在一个时刻只能有一个所有者，如果该 所有者变量被赋值给了其他变量，则原有的变量 
@@ -70,6 +70,7 @@ fn main() {
 	println!("{:?}",a);
 }
 ```
+
 
 ###转移和复制
 上一个小节 我们已经讲了 关于所有权转移 再看一个示例 
@@ -98,7 +99,7 @@ fn main() {
 实现了copy的特征，则会调用对象的copy函数 
 
 ```
- let a  = b; // if b has Copy trait, will call let a = b.copy()
+ let a  = b; // if b has Copy trait, will call let a = b.clone()
 ```
 
 所以 上面之所以没有报错 是因为 i32类型实现了Copy特征 其行为类似于C 里面的复制，会新生成一个栈上的空间 执行按位copy 
@@ -115,6 +116,194 @@ fn main() {
 }
 ```
 
+###Copy和Clone
+
+通过阅读标准库，可以知道 Copy 是一个marker 特征(空的标记特征)，仅仅用来告诉编译器 是否需要替换掉 赋值表达式 而使用clone 
+
+```
+pub trait Copy: Clone {
+    // Empty.
+}
+```
+
+因此 想要实现 Copy的类型，必须要实现Clone特征
+
+类型可以只实现clone，但是选择不实现Copy特征,如果是这样，类型必须自己明确调用clone，表明要实现 一个复制动作 
+
+
+###简单介绍一下Vec
+
+为了加深关于复制的语义，我们在之前有必要 先介绍一下Vec类型； 
+
+我们目前为止还没有见到过指针，也没有为 任何一个类型尝试去从堆上申请内存 
+
+第一个点: 使用堆上的内存 本身和类型是无关的 
+
+```
+int main() {
+	int a = 10; //a 是栈上分配的内存 
+	int *ptr = malloc(sizeof(int)); ptr指向的是一个大小为int 类型的堆内存 
+}
+```
+
+第二个点: 内存大小可变的类型，习惯从堆上分配内存 
+
+使用C实现的一个 动态数组示例 
+```
+struct Vec {
+	int len;
+	int *data;
+	int capacity;
+}
+
+void init( struct Vec *vec,int capacity) {
+	vec->data = malloc(sizeof(int) *capacity);
+	vec.len = 0;
+}
+
+
+void push( struct Vec *vec,int val) {
+	if (len <capacity) {
+		data[len] = val;
+		len++;
+		return;
+	}
+}
+```
+
+利用std 封装好的 动态数组示例
+
+```
+fn main() {
+	let arr: [i32;3] = [1,2,3]; //数组内存大小不可变 是从堆上分配的 
+	let mut vec: Vec<i32> = Vec::from(arr); // 动态数组，数据放在堆上
+	vec.push(4);
+	println!("{:?}",vec);
+}
+```
+
+### 移动?Copy?Clone?
+
+假设在RUST 中 动态数组类型 实现了copy的特征 会是什么情况？ **会导致堆上所有权被破环**
+
+![Screenshot](image/6.png)
+
+```
+fn main() {
+	let arr: [i32;3] = [1,2,3]; //数组内存大小不可变 是从堆上分配的 
+	let mut vec: Vec<i32> = Vec::from(arr); // 动态数组，数据放在堆上
+	vec.push(4);
+	let vec2 = vec;
+	println!("{:?}",vec);
+}
+```
+
+总结: 
+
+ - RUST对于新创建的类型， 默认不会实现Clone/Copy 特征，因此都是所有权移动 
+ - RUST提供的基元类型，因为都是栈上分配内存，所以都实现了 Clone/Copy 特征，因此赋值和C行为类似，编译器会在编译阶段就为新的变量预留栈内存
+ - RUST提供的高级类型(使用到了指针和堆内存，String,动态数组) 实现了Clone特征，没有实现Copy，赋值是所有权移动，但是可以通过显示调用
+   Clone，实现堆上内存的copy
+ - 我们自己在实现类型，要根据实际情况，判断是否需要提供Clone 特征，也要根据实际情况(是否会涉及堆内存，以及堆内存是如何管理的) 决定是否需要
+   提供Copy的语义
+ - 类型是否需要提供Copy 一定要在设计阶段就要想清楚，如果后面修改，对使用者会造成极大破坏(思考为什么？)
+
+思考: 复制 是否会破环 所有权 原则(一个内存 在同一时间 只能拥有一个所有者)？ 
+
+
+### 变量销毁 
+
+在RUST中，值和变量 会在拥有所有权的变量作用域消失时 一起销毁 
+
+
+
+### 所有权转移的应用
+所有权转移贯穿RUST的代码(哪里都需要使用变量)；每次遇到错误，要能根据编译器提示 知道发生了什么
+
+
+实验: 函数调用会发生转移
+```
+#[derive(Debug)]
+struct Apple;
+
+fn move_apple(_apple: Apple) {
+}
+
+fn main(){
+	let apple = Apple;
+	move_apple(apple);
+	println!("{:?}",apple);
+}
+```
+
+实验: 获取数组元素 会发生转移,不允许破环数组的完整性 
+
+```
+#[derive(Debug)]
+struct Apple;
+
+fn main(){
+	let apple_arr: [Apple;3]= [Apple,Apple,Apple];
+	let apple0 = apple_arr[0];
+}
+```
+
+实验: 获取结构体元素 会发生转移,被破坏的结构体无法再使用
+
+```
+#[derive(Debug)]
+struct People;
+
+#[derive(Debug)]
+struct Station {
+	peoples: Vec<People>,
+}
+
+fn main(){
+	let mut beijingxi: Station= Station {
+		peoples: Vec::new(),
+	};
+	
+	let mut peopleVec = beijingxi.peoples;
+	
+	peopleVec.push(People);
+	
+	println!("{:?}",peopleVec);
+	println!("{:?}",beijingxi);
+}
+```
+
+实验: 版本2
+
+```
+#[derive(Debug)]
+struct People;
+
+#[derive(Debug)]
+struct Station {
+	peoples: Vec<People>,
+}
+
+impl Station {
+    fn addOnePeople(mut self) -> Self{
+        self.peoples.push(People);
+        self
+    }
+}
+
+fn main(){
+	let mut beijingxi: Station= Station {
+		peoples: Vec::new(),
+	};
+	
+	beijingxi = beijingxi.addOnePeople();
+	
+	println!("{:?}",beijingxi);
+}
+```
+
+从上面代码，我们看到了，所有权的严苛，造成编写代码会很困难，下一节我们学习过借用之后，会缓解这种痛苦
+ 
 
 
 

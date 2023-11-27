@@ -52,6 +52,8 @@ nav:
     - '所有权': 'mem_safe/ownership.md'
     - '借用': 'mem_safe/borrow.md'
     - '生命周期': 'mem_safe/lifetime.md'
-    - '指针': 'mem_safe/pointer.md'
+    - '指针基础': 'mem_safe/pointer.md'
+    - '智能指针:Box': 'mem_safe/Box_pointer.md'
+    - '智能指针:Rc&Cell': 'mem_safe/rc_pointer.md'
 
 

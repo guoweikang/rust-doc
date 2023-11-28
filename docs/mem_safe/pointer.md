@@ -287,11 +287,17 @@ fn main() {
 如果deref 可以对一个结构体获得另外一个类型的引用，那么如何获得原有类型的引用呢？
 
 ```
-struct MyBox<T>(T);
+use std::ops::{Deref, DerefMut};
+
+#[derive(Debug)]
+struct MyBox<T>{
+    data:T,
+    len:u32,
+}
 
 impl<T> MyBox<T> {
     fn new(x: T) -> MyBox<T> {
-        MyBox(x)
+        MyBox{data:x, len:0}
     }
 }
 
@@ -299,30 +305,33 @@ impl<T> Deref for MyBox<T> {
     type Target = T;
     // 返回指向 MyBox 中数据的引用
     fn deref(&self) -> &Self::Target {
-        &self.0
+        &self.data
+    }
+}
+impl<T> DerefMut for MyBox<T> {
+    // 返回指向 MyBox 中数据的引用
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.data
     }
 }
 
+fn show_data(data: &i32) {
+    println!("{}",data);
+}
+
 fn main() {
-    let my_box = MyBox::new(5);
-	let my_ref = &my_box; //这里的 my_ref 类型究竟是  &MyBox 还是 &i32???
+    let mut my_box = MyBox::new(5_i32);
+	let my_ref = &mut my_box; //这里的 my_ref 类型究竟是  &MyBox 还是 &i32???
+	my_ref.len = 10_u32; // 引用默认还是自己 &mybox 
+	
+	*my_box = 100_i32; // 如果右边类型是i32 则左边会自动匹配
+	show_data(&my_box); //如果使用了类型的引用类型，会根据目标类型，决定是否调用deref 替换 
+	println!("{:?}",my_box);
 }
 ```
 
 ###连续的deref 转换 
-先看第一个例子
-```
-struct A(i32);
 
-fn main(){
-    let a = A(100);
-    let a_ref = &a;
-    
-    let b = *a_ref;
-}
-```
-
-再看第二个例子 
 ```
 use std::ops::Deref;
 

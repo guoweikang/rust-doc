@@ -55,6 +55,7 @@ nav:
     - '指针基础': 'mem_safe/pointer.md'
     - '智能指针:Box': 'mem_safe/Box_pointer.md'
     - '智能指针:Rc&Cell': 'mem_safe/rc_pointer.md'
+    - '内存对齐/mem模块': 'mem_safe/mem.md'
 
   - 异常处理:
     - '异常简介': 'error/intro.md'
@@ -64,10 +65,18 @@ nav:
   - 进阶特性:
     - '再谈类型': 'advance/type.md'
     - '闭包': 'advance/clousre.md'
+    - '迭代器': 'advance/iterator.md'
+    - '模式匹配': 'advance/match.md'
 
- # - 并发:
+  - 宏和元编程:
+    - '前置基础': 'macro/intro.md'
+    - '过程宏': 'macro/proc.md'
+    - '声明宏': 'macro/macro_rule.md'
 
- # - 宏和元编程:
+  - 并发:
+    - '前置基础': 'lock/intro.md'
+
+
   
  # - unsafe&外部语言交互:
 

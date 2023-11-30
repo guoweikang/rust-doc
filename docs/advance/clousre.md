@@ -7,8 +7,6 @@
 闭包的使用类似于函数的调用，但是闭包可以捕获当前作用域内的变量
 
 
-
-
 ### 闭包基本语法
 
 `(move) || expression`, 其中 `||`用来声明入参 
@@ -93,7 +91,56 @@ pub fn map_err<F, O: FnOnce(E) -> F>(self, op: O) -> Result<T, F> {
 }
 ```
 
-通过上述对于闭包的展开，我们知道 闭包对于作用域内变量使用，其实是在定义闭包类型是 初始化为闭包结构体的元素
+通过上述对于闭包的展开，我们知道 闭包对于作用域内变量使用，其实是在定义闭包类型是 **初始化为闭包结构体的元素**
+
+
+### 闭包的捕获方式 
+
+闭包对作用域内的变量有多种使用方式 
+
+ - 所有权移动: 一旦闭包涉及移动作用域内变量所有权，则闭包只能使用一次;且后续该变量无法继续使用
+ - 可用借用：在闭包作用期间，需要符合借用规则  可以多次调用 
+ - 不可变借用: 在闭包作用期间，需要符合借用规则 可以多次调用
+ - 不使用变量: 行为等于函数
+
+上述不同行为，分别对应的不同特征的方法
+
+```
+
+pub trait FnOnce<Args>
+where
+    Args: Tuple,
+{
+    type Output;
+
+    // Required method
+    extern "rust-call" fn call_once(self, args: Args) -> Self::Output; //闭包使用过后，无法在使用
+}
+
+pub trait FnMut<Args>: FnOnce<Args>
+where
+    Args: Tuple,
+{
+    // Required method
+    extern "rust-call" fn call_mut(
+        &mut self,
+        args: Args
+    ) -> Self::Output;  //闭包使用可变引用，可以重复调用
+}
+
+
+pub trait Fn<Args>: FnMut<Args>
+where
+    Args: Tuple,
+{
+    // Required method
+    extern "rust-call" fn call(&self, args: Args) -> Self::Output; //闭包使用不可变引用，可以重复调用
+}
+```
+
+
+
+
 
  
 

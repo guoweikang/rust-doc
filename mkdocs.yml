@@ -75,9 +75,13 @@ nav:
 
   - 并发:
     - '前置基础': 'lock/intro.md'
+    - '数据共享': 'lock/share_data.md'
+    - '线程安全': 'lock/thread_safe.md'
+
+  - unsafe&外部语言交互:
+    - '不安全介绍': 'unsafe/intro.md'
+    - 'C语言交互': 'unsafe/C.md'
 
 
-  
- # - unsafe&外部语言交互:
+  - RUST for Linux:
 
-  
